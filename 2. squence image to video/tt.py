@@ -1,5 +1,5 @@
 # --------------------------------------------------------
-# Detected objects Crop and Save by class
+# squence images to video file
 # Licensed under The MIT License
 # Written by Derek
 # 2021-06-27
