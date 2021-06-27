@@ -8,6 +8,7 @@ import cv2, os, time
 
 '''
     연속 또는 무작위 다수 이미지 파일을 영상으로 만들기 
+    데이터셋 출처 : https://motchallenge.net/data/MOT16/
 '''
 
 def imgs_to_video(output_dir_path, input_dir_path, video_name):
