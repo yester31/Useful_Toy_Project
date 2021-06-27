@@ -1,5 +1,5 @@
 # --------------------------------------------------------
-# Detected objects Crop and Save by class
+# Simple Websocket Client
 # Licensed under The MIT License
 # Written by Derek
 # 2021-06-27
@@ -22,7 +22,4 @@ async def connect():
             server_msg = await websocket.recv()
             print('< [server] {}'.format(server_msg))
 
-
-
 asyncio.get_event_loop().run_until_complete(connect())
-
