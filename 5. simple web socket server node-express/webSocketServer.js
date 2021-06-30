@@ -23,6 +23,17 @@ module.exports = (server) => {
     // 소켓 연결 정보 해시 테이블에 저장
     wshashtable.put(wstype + wsid, ws);  
 
+    if(wstype == "c++ws"){
+      ws.send(JSON.stringify({ 
+        optype:"server_msg",
+        wsid: "server1",                 
+        wstype:"server",
+        msg : "Hi? I am Server!!!",
+        count : 5,
+        timestamp:funcs.timestamp()
+      }))
+    }
+
     // 클라이언트로부터 메시지 수신 시
     ws.on('message', (fmessage) => {     
       let msgjson = null;             
@@ -31,7 +42,7 @@ module.exports = (server) => {
         msgjson = JSON.parse(fmessage);       
       } catch (error) {
         // 전달 받은 문자열이 JSON 형식이 아니라면 에러가 catch 부분으로 들어오게 됨.
-        console.log(`[JSON 타입이 아닌 메시지 수신] error : ${error}`);	
+        //console.log(`[JSON 타입이 아닌 메시지 수신] error : ${error}`);	
       }   
       
       // JSON 형식의 문자열로 수신된 메시지만 처리 되도록 함.
@@ -52,7 +63,7 @@ module.exports = (server) => {
             try {
               console.log(`[client_msg]   메시지 : ${JSON.stringify(msgjson)}`);
               let count = msgjson.count - 1;
-              if (count != 0){
+              if (count > 0){
                 // 클라이언트로 응답 보내기
                 ws.send(JSON.stringify({ 
                   optype:"server_msg",
