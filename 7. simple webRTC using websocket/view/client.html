@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Security-Policy" script-src='unsafe-inline';>
+    <script src="libc.js"></script> <!-- 커스텀 자바스크립트 함수 -->
+   <!-- <script src="/ws/lib/webscoket.js" defer></script>  -->
+    <script src="webRTC_client.js" defer></script>
+    <title>webRTC 테스트 페이지</title> 
+  </head>
+  <body>
+    <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt">webRTC 테스트</i></div>
+    <h1>Your Video:</h1>
+    <div class="video-grid" id="your-video-grid"></div>
+    <h1>Other Peers Video:</h1>
+    <div class="video-grid" id="other-video-grid"></div>
+  </body>
+</html>
