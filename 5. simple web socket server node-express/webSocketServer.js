@@ -11,8 +11,8 @@ module.exports = (server) => {
   // 클라이언트 접속할 경우 그 클라이언트와 연결된 소켓객체(ws) 생성 
   wss.on('connection', (ws, req) => {
     // 웹 소켓 연결 시 클라이언트 정보 수집
-    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    const port = req.headers['x-forwarded-port'] || req.connection.remotePort;
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    const port = req.headers['x-forwarded-port'] || req.socket.remotePort;
     console.log('새로운 클라이언트 접속', ip);
 
     // 사전에 약속된 규칙으로 소켓서버 호출하여 변수 생성

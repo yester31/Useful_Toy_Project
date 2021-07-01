@@ -85,7 +85,8 @@ void on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) {
 	websocketpp::lib::error_code ec;
 
 	int count = d["count"].GetInt();
-	count -= 1;
+	count += 1;
+	Sleep(3000);
 
 	stringstream ss;
 	ss << "{" << endl;
@@ -107,7 +108,7 @@ int main(int argc, char* argv[]) {
 	// Create a client endpoint
 	client c;
 
-	std::string uri = "ws://localhost:8000";
+	std::string uri = "ws://192.168.31.9:8000/wsid=c++wsid&wstype=c++ws";
 
 	if (argc == 2) {
 		uri = argv[1];
@@ -141,6 +142,7 @@ int main(int argc, char* argv[]) {
 		c.run();
 	}
 	catch (websocketpp::exception const & e) {
+		std::cout << get_time_stamp() << std::endl;
 		std::cout << e.what() << std::endl;
 	}
 }
