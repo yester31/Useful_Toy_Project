@@ -11,8 +11,8 @@ app.use(express.static(path.join(__dirname,'public'))); // public 폴더 내에 
 app.use(express.static('public'));
 
 // 예제로 만든 api client에서 /test로 호출하면 test.html 파일과 tt 변수를 리턴함.
-app.get('/ws', (req, res) => {  
-  fs.readFile('view/client.html', 'utf-8', function (error, data) {
+app.get('/', (req, res) => {  
+  fs.readFile('view/client2.html', 'utf-8', function (error, data) {
     if(error) {
       console.log(error) 
       return;

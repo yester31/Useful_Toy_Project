@@ -87,23 +87,25 @@ wsk.onclose = function () {
 }
 
 navigator.mediaDevices
-    .getUserMedia({ video: true, audio: false })
-    .then((myStream) => {
-        // create your Video
-        addVideoStream(myVideo, myStream, true);
-        // Init "WAITING_CALL STATE" of current peer
-        // 4. PersonN waiting for a call from (2)
-        myPeer.on('call', (incomingCall) => {
-            const personNVideo = document.createElement('video');
-            // 5. personN answers the call given personN's Video Stream
-            incomingCall.answer(myStream);
+  .getUserMedia({ video: true, audio: false })
+  .then((myStream) => {
+    // create your Video
+    addVideoStream(myVideo, myStream, true);
+    // Init "WAITING_CALL STATE" of current peer
+    
+    // 4. PersonN waiting for a call from (2)
+    myPeer.on('call', (incomingCall) => {
 
-            // 6. personN now will add myPeer Stream to personN's screen
-            incomingCall.on('stream', (otherVideoStream) => {
-                addVideoStream(personNVideo, otherVideoStream);
-            });
-        });
+      const personNVideo = document.createElement('video');
+      // 5. personN answers the call given personN's Video Stream
+      incomingCall.answer(myStream);
+
+      // 6. personN now will add myPeer Stream to personN's screen
+      incomingCall.on('stream', (otherVideoStream) => {
+        addVideoStream(personNVideo, otherVideoStream);
     });
+  });
+});
 
 function addVideoStream(video, stream, yourVideo = false) {
     video.srcObject = stream;
