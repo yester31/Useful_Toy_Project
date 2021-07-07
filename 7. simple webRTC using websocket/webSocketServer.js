@@ -24,29 +24,44 @@ module.exports = (server) => {
     // 소켓 연결 정보 해시 테이블에 저장
     wshashtable.put(wsid, ws);  
     wshashtable.keys().forEach(key =>{
-      console.log(key);
-      wshashtable.get(key).send(
-        JSON.stringify({'optype': 'ws_count' ,'ws_count': wshashtable.keys().length})
-      )
+      console.log("접속한 소켓 아이디 :: " + key);
     })
     // 클라이언트로부터 메시지 수신 시
     ws.on('message', (fmessage) => {  
       let msgjson = JSON.parse(fmessage); 
       //console.log(msgjson)        
       switch (msgjson.optype) {	
+        case 'check_ws_num': 
+          console.log("check_ws_num 요청 :: ")
+          if (wshashtable.keys().length >= 2){
+            ws.send(JSON.stringify({'optype': 'check_ws_num' ,'ws_count': wshashtable.keys().length}))
+          }
+          break;
         case 'offer': 
+          console.log("offer 요청 :: ")
           wshashtable.keys().forEach(key =>{
-            wshashtable.get(key).send(fmessage)
+            if (key != msgjson.wsid ){
+              wshashtable.get(key).send(fmessage)
+              console.log(key + " 로 offer 전달")
+            }
           })
           break;
         case 'answer': 
+          console.log("answer 요청 :: ")
           wshashtable.keys().forEach(key =>{
-            wshashtable.get(key).send(fmessage)
+            if (key != msgjson.wsid ){
+              wshashtable.get(key).send(fmessage)
+              console.log(key + " 로 answer 전달")
+            }          
           })
           break;
         case 'new-ice-candidate': 
+          console.log("new-ice-candidate 요청 :: ")
           wshashtable.keys().forEach(key =>{
-            wshashtable.get(key).send(fmessage)
+            if (key != msgjson.wsid ){
+              wshashtable.get(key).send(fmessage)
+              console.log(key + " 로 new-ice-candidate 전달")
+            }          
           })
           break;
         default:
@@ -62,7 +77,7 @@ module.exports = (server) => {
     // 연결 종료 시
     ws.on('close', () => {
       // 해시테이블에서 소켓 정보 제거 및 종료된 소켓 정보 출력
-      wshashtable.remove(wstype + wsid);
+      wshashtable.remove(wsid);
       console.log(`[종료된 소켓 발생] ${funcs.timestamp()}`);   // 현재 시간 출력
       console.log(`[종료된 소켓 정보] 아이디 : ${wsid} / 접속 종류 : ${wstype} / 아이피 : ${ip} / 포트 : ${port}`);
       console.log(`[현재 접속 리스트] : ${wshashtable.keys()}`);
