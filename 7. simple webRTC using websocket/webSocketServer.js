@@ -32,10 +32,8 @@ module.exports = (server) => {
       //console.log(msgjson)        
       switch (msgjson.optype) {	
         case 'check_ws_num': 
-          console.log("check_ws_num 요청 :: ")
-          if (wshashtable.keys().length >= 2){
-            ws.send(JSON.stringify({'optype': 'check_ws_num' ,'ws_count': wshashtable.keys().length}))
-          }
+          console.log("check_ws_num 요청, ws_count ::" + wshashtable.keys().length);
+          ws.send(JSON.stringify({'optype': 'check_ws_num' ,'ws_count': wshashtable.keys().length}))
           break;
         case 'offer': 
           console.log("offer 요청 :: ")

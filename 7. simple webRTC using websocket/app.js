@@ -16,10 +16,9 @@ app.get('/', (req, res) => {
       console.log(error) 
       return;
     } else {
-      let tt = 'text from sever'
       res.send(
         ejs.render(
-          data, {text : tt}
+          data
         )
       );
     }
@@ -37,7 +36,6 @@ app.use(function (err, req, res, next) {
     res.status(500).send('Something broke!');
   }
 });
-
 
 // 웹소켓 서버 
 const webSocket = require('./webSocketServer');
