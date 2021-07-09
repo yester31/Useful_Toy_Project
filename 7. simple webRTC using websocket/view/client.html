@@ -23,16 +23,46 @@
     <video class='my-video' id="remoteVideo" autoplay ></video>
   </div>
   <p id="wscount"></p>
+
   <form>
     <input type="text" id="wsid">
     <input type="button" id="ws_button" value="연결 ws" onclick="try_ws_connect();" >
   </form>
+
+  <p id="ws_msg_rec"></p>
+  <form>
+    <input type="text" id="ws_msg_send">
+    <input type="button" id="ws_msg_button" value="send msg ws" onclick="send_ws_msg();" >
+  </form>
+
+  <p id="rtc_msg_rec"></p>
+  <form>
+    <input type="text" id="rtc_msg_send">
+    <input type="button" id="rtc_msg_button" value="send msg rtc" onclick="send_rtc_msg();" >
+  </form>
+
   <script>
-    
+    var wsk = null;
+    var wsid = null;
+    var dataChannel = null;
     // 스트림을 전달 받을 비디오 요소
     var localVideo = document.querySelector('#localVideo');
     var wscount = document.querySelector('p#wscount');
     var ws_button = document.querySelector('#ws_button');
+    var ws_msg_rec = document.querySelector('p#ws_msg_rec');
+    var ws_msg_button = document.querySelector('#ws_msg_button');
+    var rtc_msg_rec = document.querySelector('p#rtc_msg_rec');
+    var rtc_msg_button = document.querySelector('#rtc_msg_button');
+
+    async function send_ws_msg(){
+      var ws_msg_send = await document.getElementById("ws_msg_send").value;
+      wsk.send(JSON.stringify({'optype': 'send_ws_msg' ,'wsid' : wsid, 'msg' : ws_msg_send, 'timestamp' : timestamp()})); // ws msg 전달 
+    }
+
+    async function send_rtc_msg(){
+      var rtc_msg_send = await document.getElementById("rtc_msg_send").value;
+      dataChannel.send(JSON.stringify({'optype': 'send_rtc_msg' ,'wsid' : wsid, 'msg' : rtc_msg_send, 'timestamp' : timestamp()})); // rtc msg 전달 
+    }
 
     const Constraints = { video: true, audio: false  };
     let localStream = null;
@@ -60,19 +90,48 @@
           console.log(`1. 클라이언트 장치 확인 : ${videoTracks[0].label}`) // 사용하는 카메라 장치 확인
         }
         var wsid_html = await document.getElementById("wsid").value;
-        const wsid = wsid_html;
+        wsid = wsid_html;
         const wstype = 'webrtc'
-        const url = 'ws://192.168.31.77:8080' //https://c96bf7a109ad.ngrok.io   
-        //const url = 'wss://a7c4407fbb01.ngrok.io'
-        const wsk = new WebSocket(`${url}/wsid=${wsid}&wstype=${wstype}`); // 웹소켓 연결 및 소켓 객체 생성
-        await console.log(`2. 웹소켓 연결 :: ${url}/wsid=${wsid}&wstype=${wstype}`)
+        //const url = 'ws://192.168.31.77:8080' //https://0a810349c89b.ngrok.io   
+        const url = 'wss://0a810349c89b.ngrok.io'
+        wsk = new WebSocket(`${url}/wsid=${wsid}&wstype=${wstype}`); // 웹소켓 연결 및 소켓 객체 생성
+        console.log(`2. 웹소켓 연결 :: ${url}/wsid=${wsid}&wstype=${wstype}`)
         const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]} // stun 서버 주소
         const peerConnection = new RTCPeerConnection(configuration); // RTCPeerConnection객체 생성
+        
+        dataChannel = peerConnection.createDataChannel("yhdatachannel");
+        
+        peerConnection.ondatachannel = function(event) {
+          console.log('ondatachannel:', event.channel);
+          dataChannel = event.channel;
+
+          dataChannel.onmessage = (e) => {
+            console.log("WebRTC 메시지 수신 완료");
+            console.log(e.data);
+            msgjson = JSON.parse(e.data);
+            console.log("보낸 시각 : "+msgjson.timestamp);
+            console.log("받은 시각 : " + timestamp());
+            rtc_msg_rec.innerHTML = msgjson.msg + ', 보낸시각 : ' + msgjson.timestamp + ', 받은시각 : ' + timestamp();
+          };
+
+          dataChannel.onerror = (error) => {
+            console.log("Data Channel Error:", error);
+          };
+
+          dataChannel.onopen = () => {
+            dataChannel.send("Hello World!");
+          };
+
+          dataChannel.onclose = () => {
+            console.log("The Data Channel is Closed ::"+ dataChannel.label);
+          };
+        };
 
         // 로컬 스트림을 track에 추가
         localStream.getTracks().forEach(track => {
           console.log('add local stream to track!!')
-          peerConnection.addTrack(track, localStream); 
+          peerConnection.addTrack(track, localStream);
+          console.log(localStream);
         });      
         var remoteVideo = document.querySelector('#remoteVideo');
 
@@ -81,6 +140,8 @@
           if(remoteVideo.srcObject !== event.streams[0]){
             remoteVideo.srcObject = event.streams[0];   // 새로 발생된 track의 원격 스트림을 화면에 출력 
             console.log('[Listener] find track and get remote stream !!')
+            console.log(event);
+            console.log(event.streams[0])
           }
         });
 
@@ -105,7 +166,7 @@
           console.log("4. [호출측] 정보 준비 offer")
           const offer = await peerConnection.createOffer();   // 로컬에 대한 정보를 담은 객체 생성
           await peerConnection.setLocalDescription(offer);    // 이 객체를 로컬 설정에 등록
-          console.log(offer)
+          //console.log(offer)
           return offer
         }
 
@@ -119,15 +180,36 @@
 
         async function treatAnswer(peerConnection, answer){
           console.log("10. [호출측] 전달 받은 answer 내용을 호출측의 원격 정보로 등록")
-          console.log(answer);
+          //console.log(answer);
           const remoteDesc = await new RTCSessionDescription(answer); // 전달 받은 수신측 메타 정보로 세션 객체로 생성
           await peerConnection.setRemoteDescription(remoteDesc);  // 수신 측 세션 객체를 피어의 원격의 설정 내용에 등록
         }
 
+        // 데이터 채널
+        dataChannel.onerror = (error) => {
+          console.log("Data Channel Error:", error);
+        };
+
+        dataChannel.onmessage = (event) => {
+          console.log("WebRTC 메시지 수신 완료");
+          msgjson = JSON.parse(event.data);
+          console.log(msgjson.timestamp);
+          console.log(timestamp());
+          rtc_msg_rec.innerHTML = msgjson.msg + ', 보낸시각 : ' + msgjson.timestamp + ', 받은시각 : ' + timestamp();
+        };
+
+        dataChannel.onopen = () => {
+          dataChannel.send("Hello World!");
+        };
+
+        dataChannel.onclose = () => {
+          console.log("The Data Channel is Closed ::"+ dataChannel.label);
+        };
+
         // 웹소켓 연결시
         wsk.onopen = function () {
           console.log('3. [웹소켓 연결 성공] 웹 소켓 서버와 연결 됨');
-          wsk.send(JSON.stringify({'optype': 'check_ws_num' ,'wsid' : wsid})); // 현재 접속해 있는 웹소켓 수 체크 
+          wsk.send(JSON.stringify({'optype': 'initi_signal' ,'wsid' : wsid})); // 현재 접속해 있는 웹소켓 수 체크 
         };
       
         // 웹소켓 메시지 처리 
@@ -135,14 +217,23 @@
           msgjson = JSON.parse(event.data);
           switch (msgjson.optype) {	
 
+            case 'send_ws_msg': // msg 수신
+              console.log("웹소켓 메시지 수신 완료");
+              console.log(msgjson.timestamp);
+              console.log(timestamp());
+              ws_msg_rec.innerHTML = msgjson.msg + ', 보낸시각 : ' + msgjson.timestamp + ', 받은시각 : ' + timestamp();
+              break;
+
+            case 'initi_signal':
+              getOffer(peerConnection)
+              .then(offer =>{
+                console.log("5. [호출측] peerConnection 정보가 담긴 offer를 수신측으로 전달");
+                wsk.send(JSON.stringify({'optype': 'offer' ,'offer': offer, 'wsid' : wsid}));   // 웹소켓을 통해 호출 측 피어에 대한 메타 정보를 수신 측으로 전달
+              }) 
+              break;
+
             case 'check_ws_num':
-              if(msgjson.ws_count >= 2){
-                getOffer(peerConnection)
-                .then(offer =>{
-                  console.log("5. [호출측] peerConnection 정보가 담긴 offer를 수신측으로 전달");
-                  wsk.send(JSON.stringify({'optype': 'offer' ,'offer': offer, 'wsid' : wsid}));   // 웹소켓을 통해 호출 측 피어에 대한 메타 정보를 수신 측으로 전달
-                }) 
-              }
+              console.log("웹소켓 접속자 수 업데이트");
               wscount.innerHTML = "접속자 수 : " + msgjson.ws_count;
               break;
 
@@ -164,7 +255,7 @@
 
             case 'new-ice-candidate':
               console.log('새로운 new-ice-candidate를 받음.')
-              console.log(msgjson.icecandidate)
+              //console.log(msgjson.icecandidate)
               try {
                 peerConnection.addIceCandidate(msgjson.icecandidate); // 수신 받은 ICE를 등록
                 console.log('전달 받은 new-ice-candidate를 등록 완료')

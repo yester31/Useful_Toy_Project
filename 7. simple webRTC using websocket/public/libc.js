@@ -20,7 +20,14 @@ function timestamp() {
   }else if(msec>=10 && msec<100){
     msec = '0' + msec;
   }
-  return  year + '-' + month + '-' + day + ' ' + hours + ':' + min + ':' + sec  + '.' + msec;       //'-' 추가하여 yyyy-mm-dd 형태 생성 가능
+  //return  year + '-' + month + '-' + day + ' ' + hours + ':' + min + ':' + sec  + '.' + msec;       //'-' 추가하여 yyyy-mm-dd 형태 생성 가능
+  return  hours + ':' + min + ':' + sec  + '.' + msec;     
+
 }
 
+
+function time_data() {
+  let date = new Date();
+  return date;       //'-' 추가하여 yyyy-mm-dd 형태 생성 가능
+}
 

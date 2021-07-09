@@ -24,19 +24,40 @@ module.exports = (server) => {
     // 소켓 연결 정보 해시 테이블에 저장
     wshashtable.put(wsid, ws);  
     wshashtable.keys().forEach(key =>{
-      console.log("접속한 소켓 아이디 :: " + key);
+      console.log("접속중인 소켓 아이디 :: " + key); 
+      wshashtable.get(key).send(JSON.stringify({'optype': 'check_ws_num' ,'ws_count': wshashtable.keys().length}))
+      console.log(key + " 로 업데이트된 웹소켓 접속수 전달")
     })
     // 클라이언트로부터 메시지 수신 시
     ws.on('message', (fmessage) => {  
       let msgjson = JSON.parse(fmessage); 
       //console.log(msgjson)        
       switch (msgjson.optype) {	
+
+        case 'send_ws_msg':
+          console.log("send_ws_msg 요청 :: ")
+          wshashtable.keys().forEach(key =>{
+            if (key != msgjson.wsid ){
+              wshashtable.get(key).send(fmessage)
+            }
+          })
+          break;
+
+        case 'initi_signal': 
+          console.log("initi_signal 요청, ws_count ::" + wshashtable.keys().length);
+          if(wshashtable.keys().length >= 2){
+            ws.send(JSON.stringify({'optype': 'initi_signal' ,'ws_count': wshashtable.keys().length}))
+          }  
+          break;
+
         case 'check_ws_num': 
           console.log("check_ws_num 요청, ws_count ::" + wshashtable.keys().length);
           ws.send(JSON.stringify({'optype': 'check_ws_num' ,'ws_count': wshashtable.keys().length}))
           break;
+
         case 'offer': 
           console.log("offer 요청 :: ")
+          //console.log(msgjson.offer);
           wshashtable.keys().forEach(key =>{
             if (key != msgjson.wsid ){
               wshashtable.get(key).send(fmessage)
@@ -79,7 +100,10 @@ module.exports = (server) => {
       console.log(`[종료된 소켓 발생] ${funcs.timestamp()}`);   // 현재 시간 출력
       console.log(`[종료된 소켓 정보] 아이디 : ${wsid} / 접속 종류 : ${wstype} / 아이피 : ${ip} / 포트 : ${port}`);
       console.log(`[현재 접속 리스트] : ${wshashtable.keys()}`);
-
+      wshashtable.keys().forEach(key =>{    
+        wshashtable.get(key).send(JSON.stringify({'optype': 'check_ws_num' ,'ws_count': wshashtable.keys().length}))
+        console.log(key + " 로 업데이트된 웹소켓 접속수 전달")
+      })
     });
   });
 };
