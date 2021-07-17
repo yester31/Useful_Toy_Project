@@ -3,9 +3,7 @@ import websockets
 import cv2
 import base64
 import numpy as np
-import io
-from PIL import Image
-import json, time
+import json
 from datetime import datetime
 
 def timestamp() :
@@ -24,31 +22,7 @@ async def connect(ip, port, wsid, wstype):
                     'msg': 'Hello Server ? I am py',
                     'timestamp': timestamp()
                 }
-
                 jsonString = json.dumps(init_websocket_msg) # json 객체를 인코딩하여 string으로 만듬
-                await websocket.send(jsonString)
-
-            # python client 코드에서 웹소켓을 통해 영상을 전달하는 로직
-            while 0 :
-                capture = cv2.VideoCapture(0)   # 웹캠
-                ret, frame = capture.read()
-
-                encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 100]
-                result, encimg = cv2.imencode('.jpg', frame, encode_param)
-                if False == result:
-                    print('could not encode image!')
-
-                # 이미지를 String 형태로 변환(인코딩)시키는 과정
-                encoded = base64.b64encode(encimg).decode('utf-8')
-
-                input_msg = {
-                    'optype': 'input_from_py',
-                    'wsid': wsid,
-                    'wstype': wstype,
-                    'frame': encoded,
-                    'timestamp': timestamp()
-                }
-                jsonString = json.dumps(input_msg)  # json 객체를 인코딩하여 string으로 만듬
                 await websocket.send(jsonString)
 
             # 전달 받은 base64로 인코딩된 frame을 이미지로 변환하여 opencv로 영상 형태로 출력
@@ -63,7 +37,7 @@ async def connect(ip, port, wsid, wstype):
                     step2 = base64.b64decode(step1)
                     step5 = np.frombuffer(step2, np.uint8)
                     frame = cv2.imdecode(step5, cv2.IMREAD_COLOR)
-                    cv2.imshow('tt', frame)
+                    cv2.imshow('(3) python_code', frame)
 
                     if cv2.waitKey(1) & 0xFF == ord('q'):
                         break
@@ -87,11 +61,33 @@ async def connect(ip, port, wsid, wstype):
 
                 else:
                     print("[ERROR]  메시지 : {}".format(data))
+
+            # python client 코드에서 웹소켓을 통해 영상을 전달하는 로직
+            '''
+            capture = cv2.VideoCapture(0)  # 웹캠
+            while 0 :
+                ret, frame = capture.read()
+                frame = cv2.resize(frame, dsize=(350, 260), interpolation=cv2.INTER_AREA)
+                encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 100]
+                result, encimg = cv2.imencode('.jpg', frame, encode_param)
+                if False == result:
+                    print('could not encode image!')
+
+                # 이미지를 String 형태로 변환(인코딩)시키는 과정
+                encoded = base64.b64encode(encimg).decode('utf-8')
+                input_msg = {
+                    'optype': 'output',
+                    'wsid': wsid,
+                    'wstype': wstype,
+                    'frame': encoded,
+                    'timestamp': timestamp()
+                }
+                jsonString = json.dumps(input_msg)  # json 객체를 인코딩하여 string으로 만듬
+                await websocket.send(jsonString)
+            '''
         except:
             print("error!!!")
             return 0
-
-
 
 if __name__ == "__main__":
 
@@ -99,6 +95,5 @@ if __name__ == "__main__":
     port = 8000
     wsid = 1
     wstype = 'pyc'
-
     asyncio.get_event_loop().run_until_complete(connect(ip, port, wsid, wstype))
     asyncio.get_event_loop().run_forever()

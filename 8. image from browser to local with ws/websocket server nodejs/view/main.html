@@ -1,34 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta name="description" content="Realtime communication with WebRTC" />
-  <meta name="author" content="//samdutton.com">
+  <meta name="description" content="Send Image from web browser to python code" />
+  <meta name="author" content="yhpark">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-  <meta itemprop="name" content="GitHub Pages site for Google codelab: Realtime communication with WebRTC">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta id="theme-color" name="theme-color" content="#307699">
-  <base target="_blank">
   <title>Send Image</title>
 </head>
-
 <body>
-
   <h1>Send Image from web browser to python code</h1>
-
   <div class="two-peace">
     <div>
+      <h3> (1) WebClient media stream </h3>
       <video id="local" width="350" height="260" autoplay></video>
     </div>
     <div >
+      <h3> (2) Canvas로 capture된 영상</h3>
       <canvas id="canvas" width="350" height="260"></canvas> 
     </div>
   </div>
   <div id="output">
-    <div id="images">
-    </div>
+    <h3> (4) python code에서 되롤려 보낸 영상</h3>
     <img id="myimage" width="350" height="260"></img>
   </div>
-
+  
   <script src="./localVideo.js"></script>
   <script src="./webSocketClient.js"></script>
   <script src="./libc.js"></script>
