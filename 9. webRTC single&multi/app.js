@@ -9,8 +9,19 @@ const path = require('path'); // 경로 관련 라이브러리
 app.use(express.static(path.join(__dirname,'public'))); // public 폴더 내에 있는 파일들은 브라우저에서 접근 가능
 app.use(express.static('public'));
 
-app.get('/', (req, res) => {  
-  fs.readFile('view/client.html', 'utf-8', function (error, data) {
+app.get('/sub', (req, res) => {  
+  fs.readFile('view/client_sub.html', 'utf-8', function (error, data) {
+    if(error) {
+      console.log(error) 
+      return;
+    } else {
+      res.send(ejs.render(data));
+    }
+  })
+})
+
+app.get('/pub', (req, res) => {  
+  fs.readFile('view/client_pub.html', 'utf-8', function (error, data) {
     if(error) {
       console.log(error) 
       return;

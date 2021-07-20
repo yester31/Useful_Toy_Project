@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Realtime communication with WebRTC</title>
+  <script src="libc.js"></script> <!-- 커스텀 자바스크립트 함수 -->
+</head>
+<style>
+  .my-video{
+    width:720px;
+    height:360px;
+    border: 1px solid black;
+  }
+</style>
+<body>
+  <h1>Realtime communication with WebRTC</h1>
+  <div id="videos">
+    <video class='my-video' id="localVideo" autoplay ></video>
+  </div>
+  <div id="videos">
+    <video class='my-video' id="remoteVideo" autoplay ></video>
+  </div>
+  <p id="wscount"></p>
+
+  <form>
+    <input type="text" id="wsid">
+    <input type="button" id="ws_button" value="연결 ws" onclick="try_ws_connect();" >
+  </form>
+
+  <script src="./webRTC.js"></script>
+
+
+</body>
+</html>

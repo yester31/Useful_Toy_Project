@@ -17,7 +17,7 @@
   <script>
     const wsid = 'yhpark'
     const wstype = 'webClinet'
-    const wsk = new WebSocket(`ws://localhost:8000/wsid=${wsid}&wstype=${wstype}`); // 웹소켓 연결 및 소켓 객체 생성
+    const wsk = new WebSocket(`ws://localhost:9002/wsid=${wsid}&wstype=${wstype}`); // 웹소켓 연결 및 소켓 객체 생성
 
     // 웹소켓 연결시
     wsk.onopen = function () {
@@ -44,13 +44,16 @@
             case 'server_msg': // server_msg라는 optype의 메시지를 수신 할 경우 처리 로직
                 console.log(`[server_msg]   메시지 : ${event.data}`);
                 let count = msgjson.count - 1; // 전달받은 메시지에서 count값을 1 빼고 다시 전달 
-                wsk.send(JSON.stringify({
+                if (count > 0){
+                  wsk.send(JSON.stringify({
                     optype: "client_msg",
                     wsid : wsid,                 
                     wstype : wstype, 
                     count : count,
                     timestamp:timestamp()
                     }));
+                }
+
                     break;
             default:
               console.log("default : ")
