@@ -30,9 +30,9 @@ async function getUserMediaStream(Constraints){
     }
     var wsid_html = await document.getElementById("wsid").value;
     wsid = wsid_html;
-    const wstype = 'webrtc'
+    const wstype = 'sub'
     //const url = 'ws://192.168.31.77:8080' //https://0a810349c89b.ngrok.io   
-    const url = 'wss://f386adbe4a01.ngrok.io'
+    const url = 'wss://de93977e0955.ngrok.io'
     wsk = new WebSocket(`${url}/wsid=${wsid}&wstype=${wstype}`); // 웹소켓 연결 및 소켓 객체 생성
     console.log(`2. 웹소켓 연결 :: ${url}/wsid=${wsid}&wstype=${wstype}`)
     const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]} // stun 서버 주소

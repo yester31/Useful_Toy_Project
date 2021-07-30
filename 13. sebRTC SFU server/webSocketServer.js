@@ -3,6 +3,8 @@ const funcs = require('./public/libs');  // 커스텀 라이브러리 불러오�
 const WebSocket = require('ws');         // 웹소켓 라이브러리
 const Hashtable = require('jshashtable');// 해시테이블 라이브러리
 const wshashtable = new Hashtable();     // 해시테이블 생성
+const streamtable = new Hashtable();     // 해시테이블 생성
+
 //global.wshashtable = wshashtable;     // 해시테이블 전역 변수화 시키기
 let wrtc = require('wrtc'); // webrtc 
 
@@ -29,26 +31,34 @@ module.exports = (server) => {
       console.log(key + " 로 업데이트된 웹소켓 접속수 전달")
     })
 
-
     const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]} // stun 서버 주소
     var peerConnection = new wrtc.RTCPeerConnection(configuration); // RTCPeerConnection객체 생성
-
+    let remoteStream = null;
+    //let localStream = null;
     // 로컬 스트림을 track에 추가
-    // localStream.getTracks().forEach(track => {
-    //   console.log('add local stream to track!!')
-    //   peerConnection.addTrack(track, localStream);
-    //   console.log(localStream);
-    // });      
+    let localStream = null;
+    if (wstype == 'sub' && streamtable.keys().length > 0){  
+      console.log('[add pub stream] track!!')
+      localStream = streamtable.get('pub');
+    }else{
+      localStream = new wrtc.MediaStream();
+    }
+    
+    localStream.getTracks().forEach(track => { // upload
+      console.log(localStream);
+      peerConnection.addTrack(track, localStream);
+    });  
     // var remoteVideo = document.querySelector('#remoteVideo');
-    // // 원격에서 전달되는 스트림 수신하기 위해 새로 추가된 track이 있는지 확인하는 리스너
-    // peerConnection.addEventListener('track', async (event) => {
-    //   if(remoteVideo.srcObject !== event.streams[0]){
-    //     remoteVideo.srcObject = event.streams[0];   // 새로 발생된 track의 원격 스트림을 화면에 출력 
-    //     console.log('[Listener] find track and get remote stream !!')
-    //     //console.log(event);
-    //     console.log(event.streams[0])
-    //   }
-    // });
+    // 원격에서 전달되는 스트림 수신하기 위해 새로 추가된 track이 있는지 확인하는 리스너
+    if (wstype == 'pub'){
+      peerConnection.addEventListener('track', async (event) => {// download 
+        remoteStream = event.streams[0];   // 새로 발생된 track의 원격 스트림을 화면에 출력 
+        streamtable.put('pub', remoteStream);
+        console.log('[Listener] find track and get remote stream !!')
+        //console.log(event);
+        console.log(remoteStream)
+      });
+    }
     // 로컬의 ICE 후보를 수집 하기 위해 icecandidate를 이벤트로 등록
     peerConnection.addEventListener('icecandidate', event => {
       if (event.candidate) {
@@ -73,7 +83,7 @@ module.exports = (server) => {
     }
     async function treatOffer(peerConnection, offer){
       console.log("7. [수신측] 전달 받은 offer 내용을 수신측의 원격 정보로 등록.")
-      await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));// 전달 받은 호출 측 메타 정보를 이용하여 세션 객체로 생성하고 원격 설정 내용에 등록
+      await peerConnection.setRemoteDescription(new wrtc.RTCSessionDescription(offer));// 전달 받은 호출 측 메타 정보를 이용하여 세션 객체로 생성하고 원격 설정 내용에 등록
       const answer = await peerConnection.createAnswer(); // 수신 측 피어에 대한 정보를 담은 객체 생성
       await peerConnection.setLocalDescription(answer);  // 수신 측 피어 로컬 정보에 위 객체를 등록
       return answer
@@ -81,7 +91,7 @@ module.exports = (server) => {
     async function treatAnswer(peerConnection, answer){
       console.log("10. [호출측] 전달 받은 answer 내용을 호출측의 원격 정보로 등록")
       //console.log(answer);
-      const remoteDesc = await new RTCSessionDescription(answer); // 전달 받은 수신측 메타 정보로 세션 객체로 생성
+      const remoteDesc = await new wrtc.RTCSessionDescription(answer); // 전달 받은 수신측 메타 정보로 세션 객체로 생성
       await peerConnection.setRemoteDescription(remoteDesc);  // 수신 측 세션 객체를 피어의 원격의 설정 내용에 등록
     }
 
@@ -119,7 +129,7 @@ module.exports = (server) => {
               treatOffer(peerConnection, msgjson.offer)
               .then(answer =>{
                 console.log("8. [수신측] 호출측으로 수신측의 peerConnection 정보가 담긴 answer 전달 ");
-                wsk.send(JSON.stringify({'optype': 'answer' ,'answer': answer, 'wsid' : wsid}));  // 호출 측에 응답으로 수신측 피어에 대한 메타 정보를 전달
+                ws.send(JSON.stringify({'optype': 'answer' ,'answer': answer, 'wsid' : wsid}));  // 호출 측에 응답으로 수신측 피어에 대한 메타 정보를 전달
               })
               console.log(key + " 로 offer 전달")
             }
