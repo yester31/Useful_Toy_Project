@@ -12,9 +12,9 @@
 06. 간단한 C++ 웹소켓 클라이언트 
 07. 간단한 WebRTC Signal 서버
 08. 웹 클라이언트 웹캠 영상을 파이썬 코드와 주고 받기
-09. WebRTC Signal 서버 pub/sub 분리 (미완성)
+09. WebRTC Signal 서버
 10. 간단한 C++ 웹소켓 서버 
 11. C++로 base64 인코딩&디코딩
 12. 파이썬 딥러닝 모델 결과를 웹 브라우저에서 출력
-
+13. WebRTC SFU 서버 (pub -> server -> sub)
 
