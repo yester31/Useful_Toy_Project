@@ -3,7 +3,7 @@ import glob
 import random
 
 '''
-3. train & val 나눠기 (통합 파일에서 랜덤으로 나눠기 or 각 폴더 별 랜덤으로 나눠기)
+3. train & val 나누기 (통합 파일에서 랜덤으로 나누기 or 각 폴더 별 랜덤으로 나누기)
 output:
 output/train/train.txt
 output/train/val.txt
@@ -34,8 +34,8 @@ def showClassCount(save_path, label):
         if paths.split('.')[-1] == 'txt':
             getClassCount(paths, label)
 
-# tot_train.txt에서 입력한 비율로 train, val 리스트를 랜덤하게 나눠기
-def splite_dataset_1(save_path, train, val):
+# tot_train.txt에서 입력한 비율로 train, val 리스트를 랜덤하게 나누기
+def spliteDataset1(save_path, train, val):
     if not os.path.exists(save_path + '/train/'):  # 저장할 폴더가 없다면
         os.makedirs(save_path + '/train/')  # 폴더 생성
         print('make directory {} is done'.format(save_path + '/train/'))
@@ -71,7 +71,7 @@ def splite_dataset_1(save_path, train, val):
     val_file.close()
 
 # 차수 별로 (거의)동일하게 val 값 추출
-def splite_dataset_2(save_path, train, val):
+def spliteDataset2(save_path, train, val):
     if not os.path.exists(save_path + '/train/'):  # 저장할 폴더가 없다면
         os.makedirs(save_path + '/train/')  # 폴더 생성
         print('make directory {} is done'.format(save_path + '/train/'))
@@ -114,7 +114,8 @@ def splite_dataset_2(save_path, train, val):
 if __name__ == '__main__':
     label = ['cat', 'dog']
     save_path = 'output'
-    splite_dataset_2(save_path, 8, 2)
+    #spliteDataset1(save_path, 8, 2)
+    spliteDataset2(save_path, 8, 2)
     showClassCount(save_path, label)
 
 

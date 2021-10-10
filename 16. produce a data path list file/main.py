@@ -15,8 +15,8 @@ if __name__ == '__main__':
     integrateFilelist(save_path)
 
     # 3. train & val 나눠기 (통합 파일에서 랜덤으로 나눠기 or 각 폴더 별 랜덤으로 나눠기)
-    #splite_dataset_1(save_path, 8, 2)
-    splite_dataset_2(save_path, 8, 2)
+    #spliteDataset1(save_path, 8, 2)
+    spliteDataset2(save_path, 8, 2)
 
     # 4. 눠어진 클래스 별 수 출력
     showClassCount(save_path, label)

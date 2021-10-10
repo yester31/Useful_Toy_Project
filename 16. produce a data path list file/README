@@ -49,7 +49,7 @@ output/tot_train/tot_train.txt (1차_train.txt + 2차_train.txt + 3차_train.txt
 output/test/test.txt           (1차_test.txt + 3차_test.txt)
 
 ========================================================================================================================
-3. train & val 나눠기 (통합 파일에서 랜덤으로 나눠기 or 각 폴더 별 랜덤으로 나눠기)
+3. train & val 나누기 (통합 파일에서 랜덤으로 나누기 or 각 폴더 별 랜덤으로 나누기)
 output:
 output/train/train.txt
 output/train/val.txt
