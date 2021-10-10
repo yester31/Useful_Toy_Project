@@ -1,6 +1,6 @@
+from main import *
 import os
 import glob
-from main import *
 
 '''
 2. 여러 리스트 파일을 통합
@@ -22,12 +22,26 @@ def integrateFilelist(save_path):
     tot_train_file = open(save_path + '/tot_train/tot_train.txt', 'w', encoding='utf-8')
     test_file = open(save_path + '/test/test.txt', 'w', encoding='utf-8')
 
-    list_file_dir_path = save_path + '/list_file'
-    for txt in [x for x in glob.iglob(list_file_dir_path + '/*.txt')]:
-    #for txt in list_file_dir_path.glob('*.txt'):  # 경로 안에 txt파일 하나씩 선택
-        print(txt)
+    for txt in [x for x in glob.iglob(save_path + '/list_file/*.txt')]:
+        txt = txt.replace('\\', '/')
+        flag = txt.split('/')[-1].split('.')[0].split('_')[-1]
 
+        if flag == 'test':
+            f = open(txt, 'r', encoding='utf-8')
+            lines = f.readlines()
+            for line in lines:
+                test_file.writelines(line)
+            f.close()
 
+        elif flag == 'train':
+            f = open(txt, 'r', encoding='utf-8')
+            lines = f.readlines()
+            for line in lines:
+                tot_train_file.writelines(line)
+            f.close()
+
+    tot_train_file.close()
+    test_file.close()
 
 if __name__ == '__main__':
 

@@ -1,6 +1,25 @@
+from main import *
 import os
 import glob
-from main import *
+'''
+1. 지정 경로의 데이터셋 리스트 파일 만들기
+*경로 리스트 파일 예시*
+data path1, 클래스 인덱스
+data path2, 클래스 인덱스
+data path3, 클래스 인덱스
+
+*로직
+case1 -> 입력 폴더경로 아래 train or val 폴더가 존재 한다면, 그 안에 data들을 예시와 같은 형식으로 폴더명_train.txt 파일로 생성 (1차, 3차)
+case2 -> 입력 폴더경로 아래 test 폴더가 존재 한다면, 그 안에 data들을 예시와 같은 형식으로 폴더명_test.txt 파일로 생성 (1차, 3차)
+case3 -> 바로 클래스 폴더가 나오는 경우, 그 안에 data들을 아래 예시와 같은 형식으로 폴더명_train.txt 파일로 생성 (2차)
+
+output:
+output/list_file/1차_train.txt
+output/list_file/2차_train.txt
+output/list_file/3차_train.txt
+output/list_file/1차_test.txt
+output/list_file/3차_test.txt
+'''
 
 def generateFileList(save_path, dir_path):
     paths = [x for x in glob.iglob(dir_path + '/**') if os.path.isdir(x)]
