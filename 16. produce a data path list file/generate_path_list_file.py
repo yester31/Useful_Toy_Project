@@ -1,6 +1,6 @@
-from main import *
 import os
 import glob
+
 '''
 1. 지정 경로의 데이터셋 리스트 파일 만들기
 *경로 리스트 파일 예시*
@@ -21,7 +21,11 @@ output/list_file/1차_test.txt
 output/list_file/3차_test.txt
 '''
 
-def generateFileList(save_path, dir_path):
+def generateFileList(save_path, dir_path, label):
+    label_dict = {}
+    for i, v in enumerate(label):
+        label_dict[v] = i
+
     paths = [x for x in glob.iglob(dir_path + '/**') if os.path.isdir(x)]
     train_count = 0
     test_count = 0
@@ -73,8 +77,8 @@ def generateFileList(save_path, dir_path):
             os.remove(test_list_file.name)
 
 if __name__ == '__main__':
-
+    label = ['cat', 'dog']
     dir_path = ['dataset/1차', 'dataset/2차', 'dataset/3차']
     save_path = 'output'
     for i, v in enumerate(dir_path):
-        generateFileList(save_path, v)
+        generateFileList(save_path, v, label)

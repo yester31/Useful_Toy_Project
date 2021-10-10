@@ -1,4 +1,3 @@
-from main import *
 import os
 import glob
 import random
@@ -11,7 +10,7 @@ output/train/val.txt
 '''
 
 # 해당 리스트 파일에서 클래스별 수 반환
-def getClassCount(list_file_path):
+def getClassCount(list_file_path, label):
     print(list_file_path)
     label_count_dict = {}
     for i, v in enumerate(label):
@@ -29,11 +28,11 @@ def getClassCount(list_file_path):
     print()
     return label_count_dict, count
 
-def showClassCount(save_path):
+def showClassCount(save_path, label):
     for paths in [x for x in glob.iglob(save_path + '/**', recursive=True)]:
         paths = paths.replace('\\', '/')
         if paths.split('.')[-1] == 'txt':
-            getClassCount(paths)
+            getClassCount(paths, label)
 
 # tot_train.txt에서 입력한 비율로 train, val 리스트를 랜덤하게 나눠기
 def splite_dataset_1(save_path, train, val):
@@ -59,7 +58,6 @@ def splite_dataset_1(save_path, train, val):
     for n in range(val_n):
         val_path.append(data_path_list[val_loc[n]])
     train_path = data_path_list
-
     for a in range(val_n):
         train_path.remove(val_path[a])
 
@@ -114,10 +112,10 @@ def splite_dataset_2(save_path, train, val):
 
 
 if __name__ == '__main__':
-
+    label = ['cat', 'dog']
     save_path = 'output'
     splite_dataset_2(save_path, 8, 2)
-    showClassCount(save_path)
+    showClassCount(save_path, label)
 
 
 

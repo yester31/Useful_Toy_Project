@@ -2,19 +2,14 @@ from generate_path_list_file import *
 from integrate_file_list import *
 from splite_train_val import *
 
-label = ['cat', 'dog']
-label_dict = {}
-for i, v in enumerate(label):
-    label_dict[v] = i
-
 if __name__ == '__main__':
-
+    label = ['cat', 'dog']
     dir_path = ['dataset/1차', 'dataset/2차', 'dataset/3차']
     save_path = 'output'
 
     # 1. 지정 경로의 데이터셋 리스트 파일 만들기
     for i, v in enumerate(dir_path):
-        generateFileList(save_path, v)
+        generateFileList(save_path, v, label)
 
     # 2. 여러 리스트 파일을 통합
     integrateFilelist(save_path)
@@ -24,4 +19,4 @@ if __name__ == '__main__':
     splite_dataset_2(save_path, 8, 2)
 
     # 4. 눠어진 클래스 별 수 출력
-    showClassCount(save_path)
+    showClassCount(save_path, label)
