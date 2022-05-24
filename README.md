@@ -1,21 +1,24 @@
-# python_code
-알아두면 어딘가에 써먹을 수도 있는? 없으면 말고 
-암튼 유용한 코드일거 같은 그런 코드
+# Useful toy project
+
+If you know it, maybe you use it somewhere?
+Anyway, code that seems to be useful code are. 
 
 
-## 목차
-01. 탐지된 객체를 클래스 별로 분류하여 파일로 저장
-02. 다수 이미지를 영상 파일로 만들기
-03. 간단한 파이썬 웹소켓 서버&클라이언트 
-04. 간단한 노드js 웹 서버 
-05. 간단한 노드js 웹소켓 서버&클라이언트
-06. 간단한 C++ 웹소켓 클라이언트 
-07. 간단한 WebRTC Signal 서버
-08. 웹 클라이언트 웹캠 영상을 파이썬 코드와 주고 받기
-09. WebRTC Signal 서버
-10. 간단한 C++ 웹소켓 서버 
-11. C++로 base64 인코딩&디코딩
-12. 파이썬 딥러닝 모델 결과를 웹 브라우저에서 출력
-13. WebRTC SFU 서버 (pub -> server -> sub)
-14. 파이썬 코드에서 DB 연결
-15. C++ 코드에서 DB 연결
+## index
+1. Classify the detected object by class and save it as a file by python code
+2. Making multiple images into video file by python code
+3. Simple nodejs web server
+4. Simple nodejs websocket server & client
+5. Simple WebRTC Signal Server
+6. WebRTC Signal Server
+7. WebRTC SFU Server (pub -> server -> sub)
+8. Simple C++ WebSocket Client
+9. Simple C++ WebSocket Server
+10. Base64 Encoding & Decoding with C++
+11. Simple python WebSocket Server & Client
+12. Sending and receiving webcam video by python web client
+13. Output the python deep learning model results in a web browser
+14. DB connection from python code
+15. DB connection from C++ code
+16. produce a data path list file with python
+17. merge images with python
